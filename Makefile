@@ -31,10 +31,11 @@ simple_example: example/simple.o libjsmn.a
 myexample: example/myjson.o libjsmn.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
-fileexample: example/filesimple.o libjsmn.a
+jsondump: example/jsondump.o libjsmn.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
-jsondump: example/jsondump.o libjsmn.a
+
+fileexample: example/filesimple.o libjsmn.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
 clean:
