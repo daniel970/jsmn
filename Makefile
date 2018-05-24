@@ -38,11 +38,15 @@ jsondump: example/jsondump.o libjsmn.a
 fileexample: example/filesimple.o libjsmn.a
 	$(CC) $(LDFLAGS) $^ -o $@
 
+arcmei: example/arcmeicopy.o libjsmn.a
+	$(CC) $(LDFLAGS) $^ -o $@
+
 clean:
 	rm -f *.o example/*.o
 	rm -f *.a *.so
 	rm -f simple_example
 	rm -f jsondump
 	rm -f fileexample
+	rm -f arcmei
 
 .PHONY: all clean test
