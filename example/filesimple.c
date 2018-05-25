@@ -42,9 +42,16 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	return -1;
 }
 
-void jsonNameList(char* jsonstr, jsmntok_t* t, int tokcount, int counter){
+void jsonNameList(char* jsonstr, jsmntok_t* t, int tokcount, int counter, int* nameTokList){
   if(t[tokcount].type == JSMN_STRING && (t[tokcount+1].type == JSMN_STRING || t[tokcount+1].type == JSMN_ARRAY || t[tokcount+1].type == JSMN_OBJECT)){
-    printf("[NAME%2d] %.*s\n", counter, t[tokcount].end - t[tokcount].start, jsonstr+t[tokcount].start);
+    nameTokList[counter-1] = tokcount;
+  }
+}
+
+void printNameList(char* jsonstr, jsmntok_t* t, int counter, int* nameTokList){
+  int i = 0;
+  for(i=1; i<counter; i++){
+    printf("[NAME%2d] %.*s\n", i, t[nameTokList[i-1]].end - t[nameTokList[i-1]].start, jsonstr+t[nameTokList[i-1]].start);
   }
 }
 
@@ -56,6 +63,10 @@ int main() {
 
 	jsmn_parser p;
 	jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+  int* nameTokList;
+  nameTokList = (int*)malloc(sizeof(int)*100);
+
 
 	jsmn_init(&p);
 	r = jsmn_parse(&p, JSON_DATA, strlen(JSON_DATA), t, sizeof(t)/sizeof(t[0]));
@@ -73,7 +84,7 @@ int main() {
 
   printf("***** Name List *****\n");
   for(i=1;i<r ;i++){
-    jsonNameList(JSON_DATA, t, i, count);
+    jsonNameList(JSON_DATA, t, i, count, nameTokList);
     if(t[i+1].type == JSMN_ARRAY){
       i += t[i+1].size+1;
     }
@@ -82,6 +93,6 @@ int main() {
     }
     count++;
   }
-
+  printNameList(JSON_DATA, t, count, nameTokList);
 	return EXIT_SUCCESS;
 }
