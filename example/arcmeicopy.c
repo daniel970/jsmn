@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../jsmn.h"
 
-typedef struct filedata* pfiledata;
+typedef struct filedata* pfiledata;// filedata를 리턴하는 함수를 만들기 위해서 다른 곳에서 filedata를 사용해야 하기 때문에 포인터를 쓴다
 typedef struct filedata{
    int size;
    char* data;
@@ -22,7 +22,7 @@ pfiledata readJSONFile() {
    }//it makes int size to be the size of every data.json's size
    fclose(fp);
    data_json = (pfiledata)malloc(size+sizeof(int));//makes new array which is size of int size?
-   data_json->size = size;// ???
+   data_json->size = size;// data_json 이라는 filedata에 size 값을 data.json의 size로 만든다
    FILE* fp2 = fopen("data.json","r");
    char* JSON_STRING = (char*)malloc(size);//makes array which is the size of int size
    while(1) {
@@ -49,7 +49,7 @@ int jsoneq(char *json, jsmntok_t *tok, char *s) {
 
 // readJSONFile()->data; jsmntok_t t[128]; int tokcount;
 void jsonNameList(char* jsonstr, jsmntok_t* t, int tokcount, int counter){
-   printf("[NAME%2d]\t%s\n", counter, t[tokcount].end - t[tokcount].start, jsonstr+t[tokcount].start);
+   printf("[NAME%2d]\t%.*s\n", counter, t[tokcount].end - t[tokcount].start, jsonstr+t[tokcount].start);
 }
 
 
@@ -81,7 +81,7 @@ int main() {
    printf("***** NAME LIST *******\n");
    for (i = 1; i < r; i++) {
       jsonNameList(JSON_STRING, &t[i], i+1, counter);
-      if(t[i+1].type == JSMN_ARRAY){
+      if(t[i+1].type == JSMN_ARRAY){ //다음 토큰의 타입이 어레이면
          i += t[i+1].size + 1;
       } else{
          i++;
