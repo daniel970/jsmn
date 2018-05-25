@@ -42,6 +42,8 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	return -1;
 }
 
+
+
 void jsonNameList(char* jsonstr, jsmntok_t* t, int tokcount, int counter, int* nameTokList){
   if(t[tokcount].type == JSMN_STRING && (t[tokcount+1].type == JSMN_STRING || t[tokcount+1].type == JSMN_ARRAY || t[tokcount+1].type == JSMN_OBJECT)){
     nameTokList[counter-1] = tokcount;
@@ -54,6 +56,26 @@ void printNameList(char* jsonstr, jsmntok_t* t, int counter, int* nameTokList){
     printf("[NAME%2d] %.*s\n", i, t[nameTokList[i-1]].end - t[nameTokList[i-1]].start, jsonstr+t[nameTokList[i-1]].start);
   }
 }
+
+void selectNameList(char* jsonstr, jsmntok_t* t, int counter, int* nameTokList){
+  int select = -1;
+  while(1){
+    printf("Select name's no (exit:0): ");
+    scanf("%d", &select);
+
+    if(select == 0){
+      break;
+    }
+    else if(select == -1 || select >= counter){
+      printf("wrong input\n");
+    }
+    else{
+      printf("[NAME%2d] %.*s\n", select, t[nameTokList[select-1]].end - t[nameTokList[select-1]].start, jsonstr+t[nameTokList[select-1]].start);
+    }
+  }
+}
+
+
 
 int main() {
 	int i;
@@ -94,5 +116,7 @@ int main() {
     count++;
   }
   printNameList(JSON_DATA, t, count, nameTokList);
+  selectNameList(JSON_DATA, t, count, nameTokList);
+
 	return EXIT_SUCCESS;
 }
