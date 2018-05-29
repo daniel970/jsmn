@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 #include "../jsmn.h"
 
 /*
@@ -45,8 +46,10 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 
 
 void jsonNameList(char* jsonstr, jsmntok_t* t, int tokcount, int counter, int* nameTokList){
-  if(t[tokcount].type == JSMN_STRING && (t[tokcount+1].type == JSMN_STRING || t[tokcount+1].type == JSMN_ARRAY || t[tokcount+1].type == JSMN_OBJECT)){
-    nameTokList[counter-1] = tokcount;
+  if(t[tokcount].type == JSMN_STRING){
+    if(t[tokcount+1].type == JSMN_STRING || t[tokcount+1].type == JSMN_ARRAY || t[tokcount+1].type == JSMN_OBJECT){
+      nameTokList[counter-1] = tokcount;
+    }
   }
 }
 
@@ -61,6 +64,7 @@ void selectNameList(char* jsonstr, jsmntok_t* t, int counter, int* nameTokList){
   int select = -1;
   while(1){
     printf("Select name's no (exit:0): ");
+    while (getchar() != '\n'); //to avoid infinite loop
     scanf("%d", &select);
 
     if(select == 0){
@@ -107,14 +111,23 @@ int main() {
   printf("***** Name List *****\n");
   for(i=1;i<r ;i++){
     jsonNameList(JSON_DATA, t, i, count, nameTokList);
+
     if(t[i+1].type == JSMN_ARRAY){
       i += t[i+1].size+1;
+    }
+
+    else if(t[i].type == JSMN_OBJECT){
+    //  if(t[i+1].type == JSMN_OBJECT){
+        i += t[i+1].size -1;
+        count--;
+    //  }
     }
     else{
       i++;
     }
     count++;
   }
+
   printNameList(JSON_DATA, t, count, nameTokList);
   selectNameList(JSON_DATA, t, count, nameTokList);
 
